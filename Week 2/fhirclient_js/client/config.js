@@ -1,11 +1,16 @@
 const ServerEndpoint = () => {
-  return "http://wildfhir4.aegis.net/fhir4-0-0";
+  return "http://wildfhir4.aegis.net/fhir4-0-1";
 };
 const TerminologyServerEndpoint = () => {
-  return "https://snowstorm.ihtsdotools.org/fhir";
+  // Doesn't work because it doesn't seem like results.data.expansion exists
+  // return "https://snowstorm-alpha.ihtsdotools.org/fhir";
+  // AU-based
+  // return "https://r4.ontoserver.csiro.au/fhir";
+  // US-based
+  return "http://tx.fhir.org/r4";
 };
 const AssignmentSubmissionFHIRServer = () => {
-  return "http://fhir.hl7fundamentals.org/r4";
+  return "http://fhirserver.hl7fundamentals.org/fhir/";
 };
 const StudentId = () => {
   return "jquach@mitre.org";
