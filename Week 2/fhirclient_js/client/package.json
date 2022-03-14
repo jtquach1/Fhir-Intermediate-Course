@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "test": "jasmine"
+    },
+    "dependencies": {
+        "axios": "^0.21.1",
+        "fhir-kit-client": "^1.6.2",
+        "jasmine": "^3.6.4"
+    }
+}
