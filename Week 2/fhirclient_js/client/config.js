@@ -2,7 +2,7 @@ const ServerEndpoint = () => {
   return "http://wildfhir4.aegis.net/fhir4-0-1";
 };
 const TerminologyServerEndpoint = () => {
-  // Doesn't work? 1st one doesn't because results.data.expansion doesn't exist
+  // Doesn't work for L00_1_T06 because results.data.expansion doesn't exist
   return "https://snowstorm.ihtsdotools.org/fhir";
   // return "https://snowstorm-alpha.ihtsdotools.org/fhir";
   // return "https://dev-snowstorm.ihtsdotools.org/fhir";
