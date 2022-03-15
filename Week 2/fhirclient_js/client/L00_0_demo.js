@@ -10,6 +10,8 @@
 // 5) How to read lab results from an IPS document for a patient
 // 6) How to expand  a valueset using a terminology server
 const Client = require("fhir-kit-client");
+const Utils = require("./utils");
+const GetPatient = Utils.GetPatient;
 const Axios = require("axios"); //When we want to do something not supported by client we use axios
 module.exports = {
   L00_1_GetPatientFullNameAndAddress,
@@ -82,29 +84,6 @@ async function L00_1_GetPatientFullNameAndAddress(
     aux = "Full Name:" + auxN + "\n" + "Address:" + auxA + "\n";
   }
   return aux;
-}
-
-async function GetPatient(
-  server,
-  patientidentifiersystem,
-  patientidentifiervalue
-) {
-  const fhirClient = new Client({
-    baseUrl: server,
-  });
-
-  var PatientInfo = null;
-  let searchResponse = await fhirClient.search({
-    resourceType: "Patient",
-    searchParams: {
-      identifier: patientidentifiersystem + "|" + patientidentifiervalue,
-    },
-  });
-  entries = searchResponse.entry;
-  if (entries) {
-    PatientInfo = entries[0].resource;
-  }
-  return PatientInfo;
 }
 
 async function L00_2_GetUSCoreRace(

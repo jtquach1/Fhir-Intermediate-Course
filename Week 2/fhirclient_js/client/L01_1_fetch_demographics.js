@@ -1,29 +1,6 @@
-const Client = require("fhir-kit-client");
+const Utils = require("./utils");
+const GetPatient = Utils.GetPatient;
 module.exports = { GetPatientPhoneAndEmail };
-
-// Copied from L00_0_demo.js
-async function GetPatient(
-  server,
-  patientidentifiersystem,
-  patientidentifiervalue
-) {
-  const fhirClient = new Client({
-    baseUrl: server,
-  });
-
-  var PatientInfo = null;
-  let searchResponse = await fhirClient.search({
-    resourceType: "Patient",
-    searchParams: {
-      identifier: patientidentifiersystem + "|" + patientidentifiervalue,
-    },
-  });
-  entries = searchResponse.entry;
-  if (entries) {
-    PatientInfo = entries[0].resource;
-  }
-  return PatientInfo;
-}
 
 const capitalize = (word) =>
   word.charAt(0).toLocaleUpperCase() + word.substr(1);
