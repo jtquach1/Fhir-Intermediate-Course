@@ -1,5 +1,4 @@
 const Client = require("fhir-kit-client");
-const Axios = require("axios");
 const Utils = require("./utils");
 const GetPatient = Utils.GetPatient;
 module.exports = { GetProvidersNearCity };

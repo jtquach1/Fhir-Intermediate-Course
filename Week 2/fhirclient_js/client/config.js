@@ -3,14 +3,15 @@ const ServerEndpoint = () => {
 };
 const TerminologyServerEndpoint = () => {
   // Doesn't work for L00_1_T06 because results.data.expansion doesn't exist
-  return "https://snowstorm.ihtsdotools.org/fhir";
-  // return "https://snowstorm-alpha.ihtsdotools.org/fhir";
+  // return "https://snowstorm.ihtsdotools.org/fhir";
+  return "https://snowstorm-alpha.ihtsdotools.org/fhir";
   // return "https://dev-snowstorm.ihtsdotools.org/fhir";
   // AU-based
   // return "https://r4.ontoserver.csiro.au/fhir";
   // US-based
   // return "http://tx.fhir.org/r4";
 };
+
 const AssignmentSubmissionFHIRServer = () => {
   return "http://fhirserver.hl7fundamentals.org/fhir/";
 };
