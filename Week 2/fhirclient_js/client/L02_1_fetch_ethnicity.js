@@ -37,7 +37,6 @@ async function GetEthnicity(
         const { code, display } = { ...extension.valueCoding };
         switch (extension.url) {
           case "ombCategory":
-            // isMinimallyCompliant = true;
             return `CODE|${code}:${display}\n`;
           case "detailed":
             return `DETAIL|${code}:${display}\n`;
@@ -48,7 +47,7 @@ async function GetEthnicity(
       });
 
       if (isMinimallyCompliant) {
-        // Seems like tests sort from TEXT, CODE, DETAIL
+        // Tests sort from TEXT, CODE, DETAIL
         return formattedExtensions.sort(sortByKey).join("");
       }
       return "Error:Non_Conformant_us-core-ethnicity_Extension";
