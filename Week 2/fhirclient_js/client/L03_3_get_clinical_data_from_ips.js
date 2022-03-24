@@ -23,7 +23,7 @@ const getIPSDocument = async (
       resourceType: "Bundle",
       searchParams: {
         "composition.patient": patient.id,
-        // "composition.code": 4,
+        "composition.type": "60591-5", // Composition.type
       },
     });
     const ipsDocument = searchResponse?.entry?.[0]?.resource;

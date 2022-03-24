@@ -12,7 +12,10 @@ describe("L04_1_Create_USCore_LabResult_Tests", function () {
     const ObservationLOINCCode = "1975-2";
     const ObservationLOINCDisplay = "Bilirubin, serum";
     const ResultType = "numeric";
-    const NumericResultValue = "8.6";
+
+    // This needs to be a number, otherwise the Observation is not conformant
+    const NumericResultValue = 8.6;
+
     const NumericResultUCUMUnit = "mg/dl";
     const CodedResultSNOMEDCode = "";
     const CodedResultSNOMEDDisplay = "";
@@ -40,7 +43,10 @@ describe("L04_1_Create_USCore_LabResult_Tests", function () {
     const ObservationLOINCCode = "1975-2";
     const ObservationLOINCDisplay = "Bilirubin, serum";
     const ResultType = "numeric";
-    const NumericResultValue = "8.6";
+
+    // This needs to be a number, otherwise the Observation is not conformant
+    const NumericResultValue = 8.6;
+
     const NumericResultUCUMUnit = "mg/dl";
     const CodedResultSNOMEDCode = "";
     const CodedResultSNOMEDDisplay = "";
@@ -128,6 +134,6 @@ describe("L04_1_Create_USCore_LabResult_Tests", function () {
       status = result;
     }
 
-    return result;
+    return status; // This needs to be status, otherwise will never equal "OK"
   }
 });
