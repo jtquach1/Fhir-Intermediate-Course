@@ -1,6 +1,7 @@
 const Client = require("fhir-kit-client");
 const Utils = require("./utils");
 const GetPatient = Utils.GetPatient;
+const capitalize = Utils.capitalize;
 module.exports = { GetImmunizations };
 
 async function GetImmunizations(
@@ -30,8 +31,7 @@ async function GetImmunizations(
         const { status, vaccineCode, occurrenceDateTime } = { ...resource };
         const { coding } = { ...vaccineCode };
         const { code, display } = { ...coding?.[0] };
-        const capitalizedStatus =
-          status.charAt(0).toUpperCase() + status.slice(1);
+        const capitalizedStatus = capitalize(status);
         return `${capitalizedStatus}|${code}:${display}|${occurrenceDateTime}\n`;
       };
       return entries.map(immunizationToString).join("");

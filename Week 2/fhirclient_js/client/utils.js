@@ -1,5 +1,5 @@
 const Client = require("fhir-kit-client");
-module.exports = { GetPatient };
+module.exports = { GetPatient, capitalize };
 
 async function GetPatient(
   server,
@@ -22,4 +22,8 @@ async function GetPatient(
     PatientInfo = entries[0].resource;
   }
   return PatientInfo;
+}
+
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
