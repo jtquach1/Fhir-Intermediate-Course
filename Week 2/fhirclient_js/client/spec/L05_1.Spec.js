@@ -15,6 +15,12 @@ describe("L05_1_Expand_Valueset_Tests", function () {
     const url = "http://snomed.info/sct?fhir_vs=isa/73211009";
     const filter = "Drug-induced diabetes";
     const result = await Client.ExpandValueSetForCombo(baseUrl, url, filter);
-    expect(result).toEqual("5368009|Drug-induced diabetes mellitus\n");
+
+    // Original terminology server at  https://snowstorm.ihtsdotools.org/fhir is unresolvable during tests, not sure why
+    // US-based server doesn't support expand
+    // AU-based server has 1+ matching concepts
+    expect(result).toEqual(
+      "5368009|Drug-induced diabetes mellitus\n408540003|Diabetes mellitus caused by non-steroid drugs\n413183008|Diabetes mellitus caused by non-steroid drugs without complication\n"
+    );
   });
 });

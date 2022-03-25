@@ -95,9 +95,9 @@ ADDRESS:128 THIS PATIENT DRIVE SUITE 318  - ANN ARBOR , MI , US (48103) / 256 TH
     const tserver = Config.TerminologyServerEndpoint();
     const result = await Client.L00_6_ExpandValueset(tserver, url, filter);
     // Works for US server
-    const match = "64432007|Myocardial imaging\n";
+    // const match = "64432007|Myocardial imaging\n";
     // Works for AU server
-    // const match = "64432007|Radionuclide myocardial imaging procedure\n"
+    const match = "64432007|Radionuclide myocardial imaging procedure\n";
     const r1 = match;
     const r2 = result;
     expect(r1.toUpperCase()).toEqual(r2.toUpperCase());
