@@ -1,0 +1,595 @@
+{
+	"info": {
+		"_postman_id": "d1bba5c5-ad83-4ae6-80f5-c02299fcbd47",
+		"name": "legacy-backend-complete",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Patient",
+			"item": [
+				{
+					"name": "find by id - found",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/Patient/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find by criteria - by name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/Patient?name=paul",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "paul"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find by criteria - by family",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/Patient?family=Jones",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient"
+							],
+							"query": [
+								{
+									"key": "family",
+									"value": "Jones"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find by criteria - by patient-id identifer and gender",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/Patient?identifier=https://saintmartinhospital.org/patient-id|1&gender=male",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient"
+							],
+							"query": [
+								{
+									"key": "identifier",
+									"value": "https://saintmartinhospital.org/patient-id|1"
+								},
+								{
+									"key": "gender",
+									"value": "male"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find by criteria - by NI identifier",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/Patient?identifier=https://www.national-office.gov/ni|7766553",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient"
+							],
+							"query": [
+								{
+									"key": "identifier",
+									"value": "https://www.national-office.gov/ni|7766553"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find by criteria - by name and birth date",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/Patient?name=john&birthdate=1917-05-29",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "john"
+								},
+								{
+									"key": "birthdate",
+									"value": "1917-05-29"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - valid patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Patient\",\n\t\"meta\":\n\t\t{\n\t\t\t\"profile\": [\"https://saintmartinhospital.org/fhir/StructureDefinition/Patient\"]\n\t\t},\n\t\"text\":\n\t\t{\n\t\t\t\"status\": \"generated\",\n\t\t\t\"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><p>Juan Fernandez</p></div>\"\n\t\t},\n\t\"identifier\": [\n\t    {\n\t        \"use\": \"usual\",\n\t        \"system\": \"https://www.national-office.gov/ni\",\n\t        \"value\": \"776234253\",\n\t        \"period\": {\n\t            \"start\": \"2019-06-06T09:41:47-03:00\"\n\t        }\n\t    }\n\t],\n    \"name\": [\n        {\n            \"use\": \"official\",\n            \"text\": \"Juan Fernandez\",\n            \"family\": \"Fernandez\",\n            \"given\": [\n                \"Juan\",\n                \"Fernandez\"\n            ]\n        },\n        {\n            \"use\": \"nickname\",\n            \"given\": [\n                \"Juancito\"\n            ]\n        }\n    ],\n    \"telecom\": [\n        {\n            \"system\": \"email\",\n            \"value\": \"juan.fernandez@gmail.com\"\n        }\n    ],\n    \"gender\": \"male\",\n    \"birthDate\": \"1945-12-05\"\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/Patient/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - invalid patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"resourceType\": \"Patient\",\n\t\"meta\":\n\t\t{\n\t\t\t\"profile\": [\"https://saintmartinhospital.org/fhir/StructureDefinition/Patient\"]\n\t\t},\n\t\"text\":\n\t\t{\n\t\t\t\"status\": \"generated\",\n\t\t\t\"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><p>Juan Fernandez</p></div>\"\n\t\t},\n\t\"identifier\": [\n\t    {\n\t        \"use\": \"usual\",\n\t        \"system\": \"https://www.national-office.gov/ni\",\n\t        \"value\": \"776234253\",\n\t        \"period\": {\n\t            \"start\": \"2019-06-06T09:41:47-03:00\"\n\t        }\n\t    }\n\t],\n    \"name\": [\n        {\n            \"use\": \"official\",\n            \"text\": \"Juan Fernandez\",\n            \"family\": \"Fernandez\",\n            \"given\": [\n                \"Juan\",\n                \"Fernandez\"\n            ]\n        },\n        {\n            \"use\": \"nickname\",\n            \"given\": [\n                \"Juancito\"\n            ]\n        }\n    ],\n    \"gender\": \"male\",\n    \"birthDate\": \"1945-12-05\"\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/Patient/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - valid patient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceType\": \"Patient\",\r\n\t\"meta\":\r\n\t\t{\r\n\t\t\t\"profile\": [\"https://saintmartinhospital.org/fhir/StructureDefinition/Patient\"]\r\n\t\t},\r\n    \"text\": {\r\n        \"status\": \"generated\",\r\n        \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">John Winston Lennon</div>\"\r\n    },\t\t\r\n    \"id\": \"1\",\r\n    \"identifier\": [\r\n        {\r\n            \"use\": \"official\",\r\n            \"system\": \"https://saintmartinhospital.org/patient-id\",\r\n            \"value\": \"1\",\r\n            \"period\": {\r\n                \"start\": \"2020-01-13T20:09:08-03:00\"\r\n            }\r\n        },\r\n        {\r\n            \"use\": \"usual\",\r\n            \"system\": \"https://www.national-office.gov/ni\",\r\n            \"value\": \"77665522\",\r\n            \"period\": {\r\n                \"start\": \"2020-01-13T20:09:08-03:00\"\r\n            }\r\n        }\r\n    ],\r\n    \"name\": [\r\n        {\r\n            \"use\": \"official\",\r\n            \"text\": \"John Winston Lennon\",\r\n            \"family\": \"Lennon\",\r\n            \"given\": [\r\n                \"John\"\r\n            ]\r\n        },\r\n        {\r\n            \"use\": \"nickname\",\r\n            \"given\": [\r\n                \"Johnny\"\r\n            ]\r\n        }\r\n    ],\r\n    \"telecom\": [\r\n        {\r\n            \"system\": \"email\",\r\n            \"value\": \"john.lennon@beatles.uk\"\r\n        }\r\n    ],\r\n    \"gender\": \"male\",\r\n    \"birthDate\": \"1940-10-09\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/Patient/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - invalid patient, wrong identifiers",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceType\": \"Patient\",\r\n\t\"meta\":\r\n\t\t{\r\n\t\t\t\"profile\": [\"https://saintmartinhospital.org/fhir/StructureDefinition/Patient\"]\r\n\t\t},\r\n    \"text\": {\r\n        \"status\": \"generated\",\r\n        \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">John Winston Lennon</div>\"\r\n    },\t\t\r\n    \"id\": \"1\",\r\n    \"identifier\": [\r\n        {\r\n            \"use\": \"official\",\r\n            \"system\": \"https://saintmartinhospital.org/patient-id\",\r\n            \"value\": \"2\",\r\n            \"period\": {\r\n                \"start\": \"2020-01-13T20:09:08-03:00\"\r\n            }\r\n        },\r\n        {\r\n            \"use\": \"usual\",\r\n            \"system\": \"https://www.national-office.gov/ni\",\r\n            \"value\": \"77665522\",\r\n            \"period\": {\r\n                \"start\": \"2020-01-13T20:09:08-03:00\"\r\n            }\r\n        }\r\n    ],\r\n    \"name\": [\r\n        {\r\n            \"use\": \"official\",\r\n            \"text\": \"John Winston Lennon\",\r\n            \"family\": \"Lennon\",\r\n            \"given\": [\r\n                \"John\"\r\n            ]\r\n        },\r\n        {\r\n            \"use\": \"nickname\",\r\n            \"given\": [\r\n                \"Johnny\"\r\n            ]\r\n        }\r\n    ],\r\n    \"telecom\": [\r\n        {\r\n            \"system\": \"email\",\r\n            \"value\": \"john.lennon@beatles.uk\"\r\n        }\r\n    ],\r\n    \"gender\": \"male\",\r\n    \"birthDate\": \"1940-10-09\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/Patient/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update - invalid patient, missing given official name",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceType\": \"Patient\",\r\n\t\"meta\":\r\n\t\t{\r\n\t\t\t\"profile\": [\"https://saintmartinhospital.org/fhir/StructureDefinition/Patient\"]\r\n\t\t},\r\n    \"text\": {\r\n        \"status\": \"generated\",\r\n        \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">John Winston Lennon</div>\"\r\n    },\t\t\r\n    \"id\": \"1\",\r\n    \"identifier\": [\r\n        {\r\n            \"use\": \"official\",\r\n            \"system\": \"https://saintmartinhospital.org/patient-id\",\r\n            \"value\": \"1\",\r\n            \"period\": {\r\n                \"start\": \"2020-01-13T20:09:08-03:00\"\r\n            }\r\n        },\r\n        {\r\n            \"use\": \"usual\",\r\n            \"system\": \"https://www.national-office.gov/ni\",\r\n            \"value\": \"77665522\",\r\n            \"period\": {\r\n                \"start\": \"2020-01-13T20:09:08-03:00\"\r\n            }\r\n        }\r\n    ],\r\n    \"name\": [\r\n        {\r\n            \"use\": \"official\",\r\n            \"text\": \"John Winston Lennon\",\r\n            \"family\": \"Lennon\"\r\n        },\r\n        {\r\n            \"use\": \"nickname\",\r\n            \"given\": [\r\n                \"Johnny\"\r\n            ]\r\n        }\r\n    ],\r\n    \"telecom\": [\r\n        {\r\n            \"system\": \"email\",\r\n            \"value\": \"john.lennon@beatles.uk\"\r\n        }\r\n    ],\r\n    \"gender\": \"male\",\r\n    \"birthDate\": \"1940-10-09\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/Patient/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Patient",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Medication",
+			"item": [
+				{
+					"name": "find by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/Medication/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Medication",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - valid medication",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceType\": \"Medication\",\r\n\t\"meta\":\r\n\t\t{\r\n\t\t\t\"profile\": [\"https://saintmartinhospital.org/fhir/StructureDefinition/Medication\"]\r\n\t\t},    \r\n    \"text\": {\r\n        \"status\": \"generated\",\r\n        \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">Acetaminophen 325 MG / Hydrocodone Bitartrate 10 MG Oral Tablet</div>\"\r\n    },\r\n    \"code\": {\r\n        \"coding\": [\r\n            {\r\n                \"system\": \"http://www.nlm.nih.gov/research/umls/rxnorm\",\r\n                \"code\": \"310965\",\r\n                \"display\": \"Ibuprofen 200 MG Oral Tablet\"\r\n            }\r\n        ],\r\n        \"text\": \"Ibuprofen 200 MG Oral Tablet\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/Medication/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Medication",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create - invalid medication, missing code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceType\": \"Medication\",\r\n\t\"meta\":\r\n\t\t{\r\n\t\t\t\"profile\": [\"https://saintmartinhospital.org/fhir/StructureDefinition/Medication\"]\r\n\t\t},    \r\n    \"text\": {\r\n        \"status\": \"generated\",\r\n        \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">Acetaminophen 325 MG / Hydrocodone Bitartrate 10 MG Oral Tablet</div>\"\r\n    },\r\n    \"code\": {\r\n        \"coding\": [\r\n            {\r\n                \"system\": \"http://www.nlm.nih.gov/research/umls/rxnorm\",\r\n                \"display\": \"Ibuprofen 200 MG Oral Tablet\"\r\n            }\r\n        ],\r\n        \"text\": \"Ibuprofen 200 MG Oral Tablet\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/Medication/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Medication",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find like display - found",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/Medication?display=hydro",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"Medication"
+							],
+							"query": [
+								{
+									"key": "display",
+									"value": "hydro"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "MedicationRequest",
+			"item": [
+				{
+					"name": "find by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/MedicationRequest/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"MedicationRequest",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "find by patient and status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/fhir/MedicationRequest?subject=5&status=active",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"MedicationRequest"
+							],
+							"query": [
+								{
+									"key": "subject",
+									"value": "5"
+								},
+								{
+									"key": "status",
+									"value": "active"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceType\": \"MedicationRequest\",\r\n\t\"meta\":\r\n\t\t{\r\n\t\t\t\"profile\": [\"https://saintmartinhospital.org/fhir/StructureDefinition/MedicationRequest\"]\r\n\t\t},    \r\n    \"text\": {\r\n        \"status\": \"generated\",\r\n        \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">https://saintmartinhospital.org/patient-id|10 - https://saintmartinhospital.org/medication-id|1 - quantity: 2 mg, frequency: 1</div>\"\r\n    },\r\n    \"status\": \"active\",\r\n    \"intent\": \"order\",\r\n    \"medicationReference\": {\r\n        \"reference\": \"Medication/1\",\r\n        \"identifier\": {\r\n            \"use\": \"official\",\r\n            \"system\": \"https://saintmartinhospital.org/medication-id\",\r\n            \"value\": \"1\"\r\n        }\r\n    },\r\n    \"subject\": {\r\n        \"reference\": \"Patient/10\",\r\n        \"identifier\": {\r\n            \"use\": \"official\",\r\n            \"system\": \"https://saintmartinhospital.org/patient-id\",\r\n            \"value\": \"5\"\r\n        }\r\n    },\r\n    \"dosageInstruction\": [\r\n        {\r\n            \"timing\": {\r\n                \"repeat\": {\r\n                    \"frequency\": 1,\r\n                    \"period\": 1,\r\n                    \"periodUnit\": \"d\"\r\n                }\r\n            },\r\n            \"asNeededBoolean\": true,\r\n            \"doseAndRate\": [\r\n                {\r\n                    \"doseQuantity\": {\r\n                        \"value\": 2,\r\n                        \"unit\": \"mg\",\r\n                        \"system\": \"http://unitsofmeasure.org\",\r\n                        \"code\": \"mg\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/MedicationRequest",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"MedicationRequest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"resourceType\": \"MedicationRequest\",\r\n    \"id\": \"3\",\r\n    \"text\": {\r\n        \"status\": \"generated\",\r\n        \"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">https://saintmartinhospital.org/patient-id|10 - https://saintmartinhospital.org/medication-id|1 - quantity: 2.00 mg, frequency: 1</div>\"\r\n    },\r\n    \"identifier\": [\r\n        {\r\n            \"use\": \"official\",\r\n            \"system\": \"https://saintmartinhospital.org/medication-request-id\",\r\n            \"value\": \"3\",\r\n            \"period\": {\r\n                \"start\": \"2020-01-17T00:36:52-03:00\"\r\n            }\r\n        }\r\n    ],\r\n    \"status\": \"active\",\r\n    \"intent\": \"order\",\r\n    \"medicationReference\": {\r\n        \"reference\": \"Medication/1\",\r\n        \"identifier\": {\r\n            \"use\": \"official\",\r\n            \"system\": \"https://saintmartinhospital.org/medication-id\",\r\n            \"value\": \"1\"\r\n        }\r\n    },\r\n    \"subject\": {\r\n        \"reference\": \"Patient/10\",\r\n        \"identifier\": {\r\n            \"use\": \"official\",\r\n            \"system\": \"https://saintmartinhospital.org/patient-id\",\r\n            \"value\": \"10\"\r\n        }\r\n    },\r\n    \"authoredOn\": \"2020-01-17T00:36:52-03:00\",\r\n    \"dosageInstruction\": [\r\n        {\r\n            \"timing\": {\r\n                \"repeat\": {\r\n                    \"frequency\": 1,\r\n                    \"period\": 1,\r\n                    \"periodUnit\": \"d\"\r\n                }\r\n            },\r\n            \"asNeededBoolean\": true,\r\n            \"doseAndRate\": [\r\n                {\r\n                    \"doseQuantity\": {\r\n                        \"value\": 4.0,\r\n                        \"unit\": \"mg\",\r\n                        \"system\": \"http://unitsofmeasure.org\",\r\n                        \"code\": \"mg\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/fhir/MedicationRequest/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"fhir",
+								"MedicationRequest",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "77b6d3f9-25ec-41d8-af63-dd44167e1987",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "16f4e002-eaa4-4dcf-a13b-2771dbd1a719",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
