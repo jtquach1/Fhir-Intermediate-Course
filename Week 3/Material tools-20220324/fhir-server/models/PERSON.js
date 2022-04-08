@@ -2,15 +2,15 @@
 //This structures were automatically generated from
 //our legacy tables by sequelize-auto
 //This is demographic information about the patient: names, gender, birth date, nickname and one email
-const PERSON_DOC = require("./PERSON_DOC");
+const Sequelize = require("sequelize");
 module.exports = function (sequelize, DataTypes) {
-  const PERSON = sequelize.define(
+  return sequelize.define(
     "PERSON",
     {
       PRSN_ID: {
+        autoIncrement: true,
         type: DataTypes.INTEGER,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
       },
       PRSN_FIRST_NAME: {
@@ -41,23 +41,23 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      createdAt: {
-        field: "PRSN_CREATE_DATE",
+      PRSN_CREATE_DATE: {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      updatedAt: {
-        field: "PRSN_UPDATE_DATE",
+      PRSN_UPDATE_DATE: {
         type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      NPI: {
+        type: DataTypes.INTEGER,
         allowNull: true,
       },
     },
     {
+      sequelize,
       tableName: "PERSON",
-      freezeTableName: true,
       timestamps: false,
     }
   );
-
-  return PERSON;
 };
