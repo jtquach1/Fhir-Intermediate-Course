@@ -45,22 +45,21 @@ function getBaseUrl(context) {
 module.exports.search = (args, context, logger) =>
   new Promise((resolve, reject) => {
     //	logger.info('Patient >>> search');
+    let baseUrl = getBaseUrl(context);
 
-    // Common search params, we only support _id
-    let {
+    const {
+      // Common search params, we only support _id
       base_version,
       _content,
       _format,
-      _id,
+      _id, // Special search parameter to search by Id instead of direct read
       _lastUpdated,
       _profile,
       _query,
       _security,
       _tag,
-    } = args;
 
-    // Search Result params ,we only support _count
-    let {
+      // Search Result params ,we only support _count
       _INCLUDE,
       _REVINCLUDE,
       _SORT,
@@ -69,19 +68,13 @@ module.exports.search = (args, context, logger) =>
       _ELEMENTS,
       _CONTAINED,
       _CONTAINEDTYPED,
-    } = args;
 
-    let baseUrl = getBaseUrl(context);
-    // These are the parameters we can search for : name, identifier, family, gender and birthDate
-    const {
+      // These are the parameters we can search for : name, identifier, family, gender and birthDate
       name,
       identifier,
       family,
       gender,
       birthdate,
-
-      // Special search parameter to search by Id instead of direct read
-      _id: idx,
     } = { ...args };
 
     // Special parameters to support pagination
@@ -121,8 +114,8 @@ module.exports.search = (args, context, logger) =>
     }
 
     // If the _id is a parameter
-    if (idx) {
-      criteria.push({ prsn_id: idx });
+    if (_id) {
+      criteria.push({ prsn_id: _id });
     }
 
     // If name is a parameter we need to look in every name part, and do an OR
@@ -131,17 +124,17 @@ module.exports.search = (args, context, logger) =>
         [Op.or]: [
           {
             PRSN_LAST_NAME: {
-              [Op.like]: "%" + name + "%",
+              [Op.like]: `%${name}%`,
             },
           },
           {
             PRSN_FIRST_NAME: {
-              [Op.like]: "%" + name + "%",
+              [Op.like]: `%${name}%`,
             },
           },
           {
             PRSN_SECOND_NAME: {
-              [Op.like]: "%" + name + "%",
+              [Op.like]: `%${name}%`,
             },
           },
         ],
@@ -215,7 +208,8 @@ module.exports.search = (args, context, logger) =>
 function getPersonsByIdentifier(personDoc, docType, searchType, searchValue) {
   return new Promise(function (resolve, reject) {
     // Empty array of person id's
-    persons = [];
+    const persons = [];
+
     // Special type of identifier: "ID" because it's not really an identifier
     // It's the server assigned ID
     if (searchType == "ID") {
@@ -233,9 +227,11 @@ function getPersonsByIdentifier(personDoc, docType, searchType, searchValue) {
       if (searchType != "") {
         include.where = [{ DCTP_ABREV: searchType }];
       }
+
       // Criteria involves the document number
-      let criteria = [];
+      const criteria = [];
       criteria.push({ PRDT_DOC_VALUE: searchValue });
+
       // Here we ask for all the persons matching the criteria
       personDoc
         .findAll({
@@ -247,6 +243,7 @@ function getPersonsByIdentifier(personDoc, docType, searchType, searchValue) {
             // And add them to the criteria array
             persons.push({ PRSN_ID: personDoc.PRDT_PRSN_ID });
           });
+
           if (persons.length == 0) {
             // tricky: there was no person we add something that will always fail
             // in a autonumeric INT, to ensure that we will return no
@@ -261,28 +258,11 @@ function getPersonsByIdentifier(personDoc, docType, searchType, searchValue) {
   });
 }
 // This is the specific search for all patients matching the query
-function getPatients(person, include, criteria, context, coun, page) {
+function getPatients(person, include, criteria, context, count = 5, page = 1) {
   return new Promise(function (resolve, reject) {
     // Here we solve paginations issues: how many records per page, which page
-    let offset = 0;
-    let limit = 0;
-    if (!coun) {
-      coun = 5;
-    }
-    if (coun == "") {
-      coun = 5;
-    }
-    let pageSize = parseInt(coun);
-
-    if (!page) {
-      page = 1;
-    }
-    if (page == "") {
-      page = 1;
-    }
-    pageInt = parseInt(page);
-    offset = (pageInt - 1) * pageSize;
-    limit = pageSize;
+    const offset = (page - 1) * count;
+    const limit = count;
 
     // Bundle and Entry definitions
     let BundleEntry = getBundleEntry;
@@ -307,6 +287,7 @@ function getPatients(person, include, criteria, context, coun, page) {
           limit = count;
           offset = 0;
         }
+
         // Now we actually do the search combining the criteria, inclusions, limit and offset
         person
           .findAll({
@@ -315,31 +296,32 @@ function getPatients(person, include, criteria, context, coun, page) {
             limit: limit,
             offset: offset,
           })
-          .then((MyPersons) => {
-            MyPersons.forEach((MyPerson) => {
+          .then((persons) => {
+            persons.forEach((person) => {
               // We map from legacy person to patient
-              MyPatient = personToPatientMapper(MyPerson);
+              const initialPatient = personToPatientMapper(person);
 
               // Add the identifiers
-              MyPatient = personIdentifierToPatientIdentifierMapper(
-                MyPatient,
-                MyPerson
+              const patient = personIdentifierToPatientIdentifierMapper(
+                initialPatient,
+                person
               );
 
               // And save the result in an array
-              result.push(MyPatient);
+              result.push(patient);
             });
 
             // With all the patients we have in the result.array we assemble the entries
-            let entries = result.map(
+            const entries = result.map(
               (patient) =>
                 new BundleEntry({
-                  fullUrl: baseUrl + "/Patient/" + patient.id,
+                  fullUrl: `${baseUrl}/Patient/${patient.id}`,
                   resource: patient,
                 })
             );
+
             // We assemble the bundle with the type, total, entries, id, and meta
-            let bundle = new Bundle({
+            const bundle = new Bundle({
               id: uuidv4(),
               meta: {
                 lastUpdated: new Date(),
@@ -352,8 +334,8 @@ function getPatients(person, include, criteria, context, coun, page) {
             // And finally, we generate the link element
             // self (always), prev (if there is a previous page available)
             // next (if there is a next page available)
-            var OriginalQuery = baseUrl + "Patient";
-            var LinkQuery = baseUrl + "Patient";
+            var OriginalQuery = `${baseUrl}Patient`;
+            var LinkQuery = `${baseUrl}Patient`;
             var parNum = 0;
             var linkParNum = 0;
 
@@ -368,21 +350,18 @@ function getPatients(person, include, criteria, context, coun, page) {
                 if (parNum == 1) {
                   sep = "?";
                 }
-                OriginalQuery =
-                  OriginalQuery + sep + param + "=" + context.req.query[param];
+
+                OriginalQuery = `${OriginalQuery}${sep}${param}=${context.req.query[param]}`;
 
                 if (param != "_page" && param != "_count") {
                   var LinkSep = "&";
                   linkParNum = linkParNum + 1;
+
                   if (linkParNum == 1) {
                     LinkSep = "?";
                   }
-                  LinkQuery =
-                    LinkQuery +
-                    LinkSep +
-                    param +
-                    "=" +
-                    context.req.query[param];
+
+                  LinkQuery = `${LinkQuery}${LinkSep}${param}=${context.req.query[param]}`;
                 }
               }
             }
@@ -396,32 +375,25 @@ function getPatients(person, include, criteria, context, coun, page) {
             ];
 
             // prev and next may or not exist
-            if (pageInt > 1) {
-              const prevPage = pageInt - 1;
+            if (page > 1) {
+              const prevPage = page - 1;
               MyLinks.push({
                 relation: "prev",
-                url:
-                  LinkQuery +
-                  "&_count=" +
-                  coun +
-                  "&_page=" +
-                  prevPage.toString(),
+                url: `${LinkQuery}&_count=${count}&_page=${prevPage.toString()}`,
               });
             }
-            MaxPages = TotalCount.count / coun + 1;
+
+            MaxPages = TotalCount.count / count + 1;
             MaxPages = parseInt(MaxPages);
-            if (pageInt < MaxPages) {
-              const nextPage = pageInt + 1;
+
+            if (page < MaxPages) {
+              const nextPage = page + 1;
               MyLinks.push({
                 relation: "next",
-                url:
-                  LinkQuery +
-                  "&_count=" +
-                  coun +
-                  "&_page=" +
-                  nextPage.toString(),
+                url: `${LinkQuery}&_count=${count}&_page=${nextPage.toString()}`,
               });
             }
+
             bundle.link = MyLinks;
 
             // Now we have all the required elements, so we can return the complete bundle
@@ -446,7 +418,7 @@ function personToPatientMapper(person) {
         family: person.PRSN_LAST_NAME,
         given: [person.PRSN_FIRST_NAME],
 
-        text: person.PRSN_FIRST_NAME + " " + person.PRSN_LAST_NAME,
+        text: `${person.PRSN_FIRST_NAME} ${person.PRSN_LAST_NAME}`,
       },
     ];
 
@@ -459,12 +431,8 @@ function personToPatientMapper(person) {
     // If there is second name then we add the given and adjust the text element
     if (person.PRSN_SECOND_NAME != "") {
       fhirPatient.name[0].given.push(person.PRSN_SECOND_NAME);
-      fhirPatient.name[0].text = fhirPatient.name.text =
-        person.PRSN_FIRST_NAME +
-        " " +
-        person.PRSN_SECOND_NAME +
-        " " +
-        person.PRSN_LAST_NAME;
+      fhirPatient.name[0].text =
+        fhirPatient.name.text = `${person.PRSN_FIRST_NAME} ${person.PRSN_SECOND_NAME} ${person.PRSN_LAST_NAME}`;
     }
 
     // We map our legacy identifier type to FHIR system
@@ -559,18 +527,18 @@ module.exports.create = (args, context, logger) =>
 
     // The incoming resource is in the request body
     // Note: Only JSON is supported
-    resource = context.req.body;
+    const resource = context.req.body;
 
     // Mapping of each resource element
     // To our legacy structure
     // First we need to extract the information
-    lastName = resource.name[0].family;
-    firstName = resource.name[0].given[0];
-    secondName = resource.name[0].given[1];
-    birthDate = resource.birthDate;
-    gender = resource.gender;
-    email = resource.telecom[0].value;
-    nickname = resource.name[1].given[0];
+    const lastName = resource.name[0].family;
+    const firstName = resource.name[0].given[0];
+    const secondName = resource.name[0].given[1];
+    const birthDate = resource.birthDate;
+    const gender = resource.gender;
+    const email = resource.telecom[0].value;
+    const nickname = resource.name[1].given[0];
 
     // We assemble the object for sequelizer to take
     // charge of the instance creation
@@ -628,10 +596,12 @@ module.exports.searchById = (args, context, logger) =>
     let person = new Person(sequelize, DataTypes);
     let personDoc = new PersonDoc(sequelize, DataTypes);
     let docType = new DocType(sequelize, DataTypes);
+
     personDoc.belongsTo(docType, {
       as: "DOC_TYPE",
       foreignKey: "PRDT_DCTP_ID",
     });
+
     person.hasMany(personDoc, { as: "PERSON_DOC", foreignKey: "PRDT_PRSN_ID" });
 
     person
@@ -652,22 +622,18 @@ module.exports.searchById = (args, context, logger) =>
       })
       .then((person) => {
         if (person) {
-          const patient = personToPatientMapper(person);
-          const patientIdentifier = personIdentifierToPatientIdentifierMapper(
-            patient,
+          const initialPatient = personToPatientMapper(person);
+          const patient = personIdentifierToPatientIdentifierMapper(
+            initialPatient,
             person
           );
-          resolve(patientIdentifier);
+          resolve(patient);
         } else {
           let operationOutcome = new getOperationOutcome();
           let legacyMapper = LegacyDocumentType;
           var mapped = legacyMapper.GetDocumentSystemUse("ID");
-          var message =
-            "Patient with identifier " +
-            mapped.system +
-            " " +
-            id +
-            " not found ";
+          var message = `Patient with identifier ${mapped.system} ${id} not found `;
+
           operationOutcome.issue = [
             {
               severity: "error",
@@ -679,15 +645,15 @@ module.exports.searchById = (args, context, logger) =>
         }
       })
       .catch((error) => {
-        let OO = new getOperationOutcome();
+        let operationOutcome = new getOperationOutcome();
         var message = error;
-        OO.issue = [
+        operationOutcome.issue = [
           {
             severity: "error",
             code: "processing",
             diagnostics: message,
           },
         ];
-        resolve(OO);
+        resolve(operationOutcome);
       });
   });
