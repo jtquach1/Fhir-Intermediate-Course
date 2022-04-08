@@ -1,0 +1,299 @@
+{
+	"info": {
+		"_postman_id": "87ddba80-a92c-4884-8e95-83ae1d51cdcd",
+		"name": "FHIR INTERMEDIATE COURSE - NODE JS SERVER",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Patient",
+			"item": [
+				{
+					"name": "find by criteria",
+					"item": [
+						{
+							"name": "by name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient?name=John",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "John"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by family",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient?family=Jones",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "family",
+											"value": "Jones"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by patient-id identifer and gender",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient?identifier=https://saintmartinhospital.org/patient-id|1&gender=male",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "identifier",
+											"value": "https://saintmartinhospital.org/patient-id|1"
+										},
+										{
+											"key": "gender",
+											"value": "male"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by NI identifier",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient?identifier=https://www.national-office.gov/ni|7766553",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "identifier",
+											"value": "https://www.national-office.gov/ni|7766553"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by name and birth date",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient?name=john&birthdate=1917-05-29",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "john"
+										},
+										{
+											"key": "birthdate",
+											"value": "1917-05-29"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by email",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient?email=ringo.starr@beatles.uk&email=john.miles@music.uk",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "email",
+											"value": "ringo.starr@beatles.uk"
+										},
+										{
+											"key": "email",
+											"value": "john.miles@music.uk"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "find by id",
+					"item": [
+						{
+							"name": "find by id - found",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "find by id - not found",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient/412",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient",
+										"412"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create",
+					"item": [
+						{
+							"name": "create - valid patient",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/fhir+json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"resourceType\": \"Patient\",\n\t\"text\":\n\t\t{\n\t\t\t\"status\": \"generated\",\n\t\t\t\"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><p></p></div>\"\n\t\t},\n\t\"identifier\": [\n\t    {\n\t        \"use\": \"usual\",\n\t        \"system\": \"https://www.national-office.gov/ni\",\n\t        \"value\": \"77000000\",\n\t        \"period\": {\n\t            \"start\": \"2019-06-06T09:41:47-03:00\"\n\t        }\n\t    }\n\t],\n    \"name\": [\n        {\n            \"use\": \"official\",\n            \"text\": \"John Smith\",\n            \"family\": \"Smith\",\n            \"given\": [\n                \"John\"\n            ]\n        },\n        {\n            \"use\": \"nickname\",\n            \"given\": [\n                \"Johnnie\"\n            ]\n        }\n    ],\n    \"telecom\": [\n        {\n            \"system\": \"email\",\n            \"value\": \"john.cash@singers.com\"\n        }\n    ],\n    \"gender\": \"male\",\n    \"birthDate\": \"1920-12-05\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Patient/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Patient",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Metadata",
+			"item": [
+				{
+					"name": "Server Metadata",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Server metadata"
+		}
+	]
+}

@@ -75,6 +75,7 @@ module.exports.search = (args, context, logger) =>
       family,
       gender,
       birthdate,
+      email,
     } = { ...args };
 
     // Special parameters to support pagination
@@ -138,6 +139,13 @@ module.exports.search = (args, context, logger) =>
             },
           },
         ],
+      });
+    }
+
+    // Assignment L01-1: Add search parameter
+    if (email) {
+      criteria.push({
+        PRSN_EMAIL: email,
       });
     }
 
