@@ -166,7 +166,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient?email=ringo.starr@beatles.uk&email=john.miles@music.uk",
+									"raw": "http://localhost:3000/4_0_0/Patient?email=ringo.starr@beatles.uk",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -180,10 +180,6 @@
 										{
 											"key": "email",
 											"value": "ringo.starr@beatles.uk"
-										},
-										{
-											"key": "email",
-											"value": "john.miles@music.uk"
 										}
 									]
 								}
@@ -294,6 +290,162 @@
 				}
 			],
 			"description": "Server metadata"
+		},
+		{
+			"name": "Practitioner",
+			"item": [
+				{
+					"name": "find by criteria",
+					"item": [
+						{
+							"name": "by name",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "by family",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner?family=McEnroe",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner"
+									],
+									"query": [
+										{
+											"key": "family",
+											"value": "McEnroe"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by patient-id identifer and gender",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner?identifier=https://saintmartinhospital.org/patient-id|1&gender=male",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner"
+									],
+									"query": [
+										{
+											"key": "identifier",
+											"value": "https://saintmartinhospital.org/patient-id|1"
+										},
+										{
+											"key": "gender",
+											"value": "male"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by NPI identifier",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner?identifier=http://hl7.org.fhir/sid/us-npi|2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner"
+									],
+									"query": [
+										{
+											"key": "identifier",
+											"value": "http://hl7.org.fhir/sid/us-npi|2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by name and birth date",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner?name=patrick&birthdate=1959-02-16",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "patrick"
+										},
+										{
+											"key": "birthdate",
+											"value": "1959-02-16"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by email",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner?email=john.entwistle@thewho.uk",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner"
+									],
+									"query": [
+										{
+											"key": "email",
+											"value": "john.entwistle@thewho.uk"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
 		}
 	]
 }
