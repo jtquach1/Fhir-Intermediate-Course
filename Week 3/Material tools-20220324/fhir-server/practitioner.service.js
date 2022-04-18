@@ -99,7 +99,7 @@ module.exports.search = (args, context, logger) =>
 
     // If the _id is a parameter
     if (_id) {
-      criteria.push({ prsn_id: _id });
+      criteria.push({ NPI: _id });
     }
 
     // If name is a parameter we need to look in every name part, and do an OR
@@ -145,6 +145,14 @@ module.exports.search = (args, context, logger) =>
         ],
       },
     ];
+
+    // Assignment L01-2: Add support for Practitioner
+    // We need to make sure the people we get have NPI's, otherwise we get an empty bundle from querying Patients too (who have null NPIs)
+    criteria.push({
+      NPI: {
+        [Op.not]: null,
+      },
+    });
 
     // We need to handle the 'identifier' parameter in a different way. We will search first in PERSON_DOC to get the (few..one?) person matching the identifier and add them as 'another' criteria for the search. So we have both. We decided to do this because the alternative was to filter using sequelize filter for includes (include.where) but it would also filter our results to only the specific identifier. And persons can have more than one, thus...this
 
@@ -207,81 +215,6 @@ module.exports.search = (args, context, logger) =>
     }
   });
 
-// POST of a new Practitioner Instance
-module.exports.create = (args, context, logger) =>
-  new Promise((resolve, reject) => {
-    // 	logger.info('Practitioner >>> searchById');
-    let { base_version } = args;
-
-    // Our legacy model
-    let docType = new DocType(sequelize, DataTypes);
-    let person = new Person(sequelize, DataTypes);
-    let personDoc = new PersonDoc(sequelize, DataTypes);
-
-    // The incoming resource is in the request body
-    // Note: Only JSON is supported
-    const resource = context.req.body;
-
-    // Mapping of each resource element
-    // To our legacy structure
-    // First we need to extract the information
-    const lastName = resource.name[0].family;
-    const firstName = resource.name[0].given[0];
-    const secondName = resource.name[0].given[1];
-    const birthDate = resource.birthDate;
-    const gender = resource.gender;
-    const email = resource.telecom[0].value;
-    const nickname = resource.name[1].given[0];
-
-    // We assemble the object for sequelizer to take
-    // charge of the instance creation
-    person
-      .create({
-        PRSN_FIRST_NAME: firstName,
-        PRSN_SECOND_NAME: secondName,
-        PRSN_LAST_NAME: lastName,
-        PRSN_BIRTH_DATE: birthDate,
-        PRSN_GENDER: gender,
-        PRSN_EMAIL: email,
-        PRSN_NICK_NAME: nickname,
-        createdAt: new Date().toISOString(),
-        updatedAt: "",
-      })
-      .then((person) => {
-        // This is the new resource id (server assigned)
-        newId = person.PRSN_ID;
-
-        // For each identifier, we create a new PERSON_DOC record
-        // But we need to search for the ID of the document type first
-        resource.identifier.forEach((ident) => {
-          let legacyMapper = LegacyDocumentType;
-          search_type = legacyMapper.GetDocumentType(ident.system);
-
-          // FHIR identifier.system -> document type
-          if (search_type != "") {
-            // document type code -> document type id
-            docType
-              .findOne({
-                where: { DCTP_ABREV: search_type },
-              })
-              .then((doc) => {
-                docTypeid = personDoc.create({
-                  // With the document type and value, and the person id we create the new record in PERSON_DOC
-                  PRDT_PRSN_ID: newId,
-                  PRDT_DCTP_ID: doc.DCTP_ID,
-                  PRDT_DOC_VALUE: ident.value,
-                  createdAt: new Date().toISOString(),
-                  updatedAt: "",
-                });
-              });
-          }
-        });
-
-        // This is all the information that the response will have about the practitioner, the newId in Location
-        resolve({ id: newId });
-      });
-  });
-
 module.exports.searchById = (args, context, logger) =>
   new Promise((resolve, reject) => {
     // 	logger.info('Practitioner >>> searchById');
@@ -299,7 +232,7 @@ module.exports.searchById = (args, context, logger) =>
 
     person
       .findOne({
-        where: { prsn_id: id },
+        where: { NPI: id },
         include: [
           {
             model: personDoc,
@@ -327,7 +260,7 @@ module.exports.searchById = (args, context, logger) =>
         } else {
           let operationOutcome = new getOperationOutcome();
           let legacyMapper = LegacyDocumentType;
-          var mapped = legacyMapper.GetDocumentSystemUse("ID");
+          var mapped = legacyMapper.GetDocumentSystemUse("NPI");
           var message = `Practitioner with identifier ${mapped.system} ${id} not found `;
 
           operationOutcome.issue = [

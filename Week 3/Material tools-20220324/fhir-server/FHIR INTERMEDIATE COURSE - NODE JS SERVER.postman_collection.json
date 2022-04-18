@@ -301,7 +301,25 @@
 							"name": "by name",
 							"request": {
 								"method": "GET",
-								"header": []
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner?name=John",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "John"
+										}
+									]
+								}
 							},
 							"response": []
 						},
@@ -337,7 +355,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner?identifier=https://saintmartinhospital.org/patient-id|1&gender=male",
+									"raw": "http://localhost:3000/4_0_0/Practitioner?identifier=https://saintmartinhospital.org/patient-id|10&gender=male",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -350,11 +368,41 @@
 									"query": [
 										{
 											"key": "identifier",
-											"value": "https://saintmartinhospital.org/patient-id|1"
+											"value": "https://saintmartinhospital.org/patient-id|10"
 										},
 										{
 											"key": "gender",
 											"value": "male"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner?id=1&",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1"
+										},
+										{
+											"key": "",
+											"value": null
 										}
 									]
 								}
@@ -438,6 +486,53 @@
 											"key": "email",
 											"value": "john.entwistle@thewho.uk"
 										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "find by id",
+					"item": [
+						{
+							"name": "find by id - found",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner/3",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "find by id - not found",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/4_0_0/Practitioner/412",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"4_0_0",
+										"Practitioner",
+										"412"
 									]
 								}
 							},

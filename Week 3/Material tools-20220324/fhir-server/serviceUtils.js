@@ -40,6 +40,9 @@ function getPersonsByIdentifier(personDoc, docType, searchType, searchValue) {
     if (searchType == "ID") {
       persons.push({ PRSN_ID: searchValue });
       resolve(persons);
+    } else if (searchType === "NPI") {
+      persons.push({ NPI: searchValue });
+      resolve(persons);
     } else {
       // Association between DOC_TYPE and PERSON_DOC to search by the abbreviated type and not by ID
       let include = [
@@ -87,11 +90,11 @@ function getPersonsByIdentifier(personDoc, docType, searchType, searchValue) {
 function convertLegacyToFhirIdentifiers(resource, person) {
   // Our helper for transforming the legacy to system/value
   let legacyMapper = LegacyDocumentType;
-  MyDocs = person.PERSON_DOC;
+  const docs = person.PERSON_DOC;
 
-  if (MyDocs) {
+  if (docs) {
     // For each legacy identifier
-    MyDocs.forEach((doc) => {
+    docs.forEach((doc) => {
       var docTypeCode = doc.DOC_TYPE.DCTP_ABREV;
       var docNumber = doc.PRDT_DOC_VALUE;
       var startDate = doc.createdAt;
@@ -137,7 +140,6 @@ function personToPatientOrPractitionerMapper(person, resourceType) {
         use: "official",
         family: person.PRSN_LAST_NAME,
         given: [person.PRSN_FIRST_NAME],
-
         text: `${person.PRSN_FIRST_NAME} ${person.PRSN_LAST_NAME}`,
       },
     ];
@@ -233,9 +235,6 @@ function getPatientsOrPractitioners(
     // Our Base address
     let baseUrl = getBaseUrl(context);
 
-    result = [];
-    entries = [];
-
     // Get total number of rows because we want to know how many records in total we have to report that in our searchset bundle
     person
       .findAndCountAll({
@@ -259,6 +258,8 @@ function getPatientsOrPractitioners(
             offset: offset,
           })
           .then((persons) => {
+            const result = [];
+
             persons.forEach((person) => {
               // We map from legacy person to person/practitioner
               const initialResource = personToPatientOrPractitionerMapper(
