@@ -5,7 +5,6 @@ const LegacyDocumentType = require("./legacy_document_type");
 // UID generator for bundles
 const uuidv4 = require("uuid").v4;
 
-// FHIR specific stuff: Server, resources: Patient, Bundle, OperationOutcome and Entry
 const { RESOURCES } = require("@asymmetrik/node-fhir-server-core").constants;
 const FHIRServer = require("@asymmetrik/node-fhir-server-core");
 const getBundle = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/bundle");
@@ -117,7 +116,7 @@ function convertLegacyToFhirIdentifiers(resource, person) {
   }
 }
 
-// Person to Patient mapper. This function receives a legacy person and returns a FHIR Patient
+// Person to Patient mapper. This function receives a legacy person and returns a FHIR Patient/Practitioner
 function personToPatientOrPractitionerMapper(person, resourceType) {
   let resource;
   if (resourceType === "Patient") {
@@ -132,7 +131,10 @@ function personToPatientOrPractitionerMapper(person, resourceType) {
     }
 
     // Logical server id
-    resource.id = person.PRSN_ID.toString();
+    resource.id =
+      resourceType === "Practitioner"
+        ? person.NPI.toString()
+        : person.PRSN_ID.toString();
 
     // We only have family, given and text. If we have more than one given, we will adjust later.
     resource.name = [
@@ -213,7 +215,7 @@ function personToPatientOrPractitionerMapper(person, resourceType) {
   return resource;
 }
 
-// This is the specific search for all patients matching the query
+// This is the specific search for all patients/practitioners matching the query
 function getPatientsOrPractitioners(
   person,
   include,
@@ -225,8 +227,10 @@ function getPatientsOrPractitioners(
 ) {
   return new Promise(function (resolve, reject) {
     // Here we solve paginations issues: how many records per page, which page
-    const offset = (page - 1) * count;
-    const limit = count;
+    let pageSize = parseInt(count);
+    let pageInt = parseInt(page);
+    let offset = (pageInt - 1) * pageSize;
+    let limit = pageSize;
 
     // Bundle and Entry definitions
     let BundleEntry = getBundleEntry;
@@ -341,7 +345,7 @@ function getPatientsOrPractitioners(
             ];
 
             // prev and next may or not exist
-            if (page > 1) {
+            if (pageInt > 1) {
               const prevPage = page - 1;
               MyLinks.push({
                 relation: "prev",
@@ -352,7 +356,7 @@ function getPatientsOrPractitioners(
             MaxPages = TotalCount.count / count + 1;
             MaxPages = parseInt(MaxPages);
 
-            if (page < MaxPages) {
+            if (pageInt < MaxPages) {
               const nextPage = page + 1;
               MyLinks.push({
                 relation: "next",

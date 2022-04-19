@@ -1,5 +1,4 @@
 /*eslint no-unused-vars: "warn"*/
-// We only support one resource type: practitioner. And only search by id, by specific criteria and create.
 
 // Housekeeping for sequelize
 const { DataTypes } = require("sequelize");
@@ -13,7 +12,7 @@ const DocType = require("./models/DOC_TYPE");
 // Mapping between FHIR system and legacy document type
 const LegacyDocumentType = require("./legacy_document_type");
 
-// FHIR specific stuff: Server, resources: Practitioner, Bundle, OperationOutcome and Entry
+// FHIR specific stuff
 const getOperationOutcome = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/operationoutcome");
 
 const {

@@ -4,7 +4,7 @@ const {
   constants,
 } = require("@asymmetrik/node-fhir-server-core");
 const { VERSIONS } = constants;
-//We only support patient
+
 let config = {
   profiles: {
     patient: {
@@ -15,8 +15,13 @@ let config = {
       service: "./practitioner.service.js",
       versions: [VERSIONS["4_0_0"]],
     },
+    medicationRequest: {
+      service: "./medicationRequest.service.js",
+      versions: [VERSIONS["4_0_0"]],
+    },
   },
 };
+
 let server = initialize(config);
 let logger = loggers.get("default");
 

@@ -13,7 +13,7 @@ const DocType = require("./models/DOC_TYPE");
 // Mapping between FHIR system and legacy document type
 const LegacyDocumentType = require("./legacy_document_type");
 
-// FHIR specific stuff: Server, resources: Patient, Bundle, OperationOutcome and Entry
+// FHIR specific stuff
 const getOperationOutcome = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/operationoutcome");
 
 const {
