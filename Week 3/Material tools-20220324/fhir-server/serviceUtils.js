@@ -11,6 +11,7 @@ const getBundle = require("@asymmetrik/node-fhir-server-core/src/server/resource
 const getBundleEntry = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/bundleentry");
 const getPatient = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/patient");
 const getPractitioner = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/practitioner");
+const getMedicationRequest = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/medicationrequest");
 
 // Meta data for FHIR R4
 let getMeta = (base_version) => {
@@ -215,9 +216,101 @@ function personToPatientOrPractitionerMapper(person, resourceType) {
   return resource;
 }
 
-// This is the specific search for all patients/practitioners matching the query
-function getPatientsOrPractitioners(
-  person,
+// Medication to MedicationRequest mapper. This function receives a legacy medication and returns a FHIR MedicationRequest
+function medToMedicationRequestMapper(medication, patient, practitioner) {
+  let resource = getMedicationRequest;
+
+  // Logical server id
+  resource.id = medication.med_id.toString();
+
+  // No conversion needed
+  resource.status = medication.status;
+  resource.intent = medication.intent;
+  resource.medicationCodeableConcept = {
+    coding: [
+      {
+        system: "http://www.nlm.nih.gov/research/umls/rxnorm",
+        code: resource.code,
+        display: resource.display,
+      },
+    ],
+  };
+
+  resource.subject = {
+    reference: `Patient/${patient.id}`,
+    display: patient.name?.[0].text,
+  };
+
+  resource.requester = {
+    reference: `Practitioner/${practitioner.id}`,
+    display: practitioner.name?.[0].text,
+  };
+
+  // Full text for the resource. NO automatic narrative.
+  resource.text = {
+    status: "generated",
+    div: '<div xmlns="http:// www.w3.org/1999/xhtml">' + resource.id + "</div>",
+  };
+
+  // And that's our resource
+  return resource;
+}
+
+const convertPersonToFHIR = (resourceType) => (person) => {
+  // We map from legacy person to person/practitioner
+  const initialResource = personToPatientOrPractitionerMapper(
+    person,
+    resourceType
+  );
+
+  // Add the identifiers
+  const resource = convertLegacyToFhirIdentifiers(initialResource, person);
+
+  // And save the result in an array
+  return resource;
+};
+
+const convertMedicationToFHIR = (medication) => {
+  const patient = {
+    id: 1234,
+  }; /*|| (await patientSearchById(medication.PRSN_ID, context))*/
+  const practitioner = {
+    id: 5678,
+  }; /*|| (await practitionerSearchById(medication.NPI, context))*/
+
+  // console.log("patient", JSON.stringify(patient));
+  // console.log("practitioner", JSON.stringify(practitioner));
+
+  // We map from legacy medication to MedicationRequest
+  const medicationRequest = medToMedicationRequestMapper(
+    medication,
+    patient,
+    practitioner
+  );
+
+  // And save the result in an array
+  return medicationRequest;
+};
+
+const getFhirConverter = (resourceType) => {
+  let converter;
+  switch (resourceType) {
+    case "MedicationRequest":
+      converter = convertMedicationToFHIR;
+      break;
+    case "Patient":
+    case "Practitioner":
+      converter = convertPersonToFHIR(resourceType);
+      break;
+    default:
+      converter = undefined;
+  }
+  return converter;
+};
+
+// This is the specific search for all resources matching the query
+function getFhirResources(
+  legacyModel,
   include,
   criteria,
   context,
@@ -225,6 +318,9 @@ function getPatientsOrPractitioners(
   page = 1,
   resourceType
 ) {
+  const converter = getFhirConverter(resourceType);
+  if (!converter) return;
+
   return new Promise(function (resolve, reject) {
     // Here we solve paginations issues: how many records per page, which page
     let pageSize = parseInt(count);
@@ -240,7 +336,7 @@ function getPatientsOrPractitioners(
     let baseUrl = getBaseUrl(context);
 
     // Get total number of rows because we want to know how many records in total we have to report that in our searchset bundle
-    person
+    legacyModel
       .findAndCountAll({
         where: criteria,
         include: include,
@@ -248,38 +344,21 @@ function getPatientsOrPractitioners(
       })
       .then((TotalCount) => {
         // Adjust page offset and limit to the total count
-        if (offset + limit > TotalCount) {
+        if (offset + limit > TotalCount.count) {
           limit = count;
           offset = 0;
         }
 
         // Now we actually do the search combining the criteria, inclusions, limit and offset
-        person
+        legacyModel
           .findAll({
             where: criteria,
             include: include,
             limit: limit,
             offset: offset,
           })
-          .then((persons) => {
-            const result = [];
-
-            persons.forEach((person) => {
-              // We map from legacy person to person/practitioner
-              const initialResource = personToPatientOrPractitionerMapper(
-                person,
-                resourceType
-              );
-
-              // Add the identifiers
-              const resource = convertLegacyToFhirIdentifiers(
-                initialResource,
-                person
-              );
-
-              // And save the result in an array
-              result.push(resource);
-            });
+          .then((legacyModels) => {
+            const result = legacyModels.map(converter);
 
             // With all the patients we have in the result.array we assemble the entries
             const entries = result.map(
@@ -378,5 +457,6 @@ module.exports = {
   getPersonsByIdentifier,
   convertLegacyToFhirIdentifiers,
   personToPatientOrPractitionerMapper,
-  getPatientsOrPractitioners,
+  medToMedicationRequestMapper,
+  getFhirResources,
 };

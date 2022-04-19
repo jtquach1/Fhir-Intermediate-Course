@@ -20,15 +20,12 @@ const {
   getPersonsByIdentifier,
   convertLegacyToFhirIdentifiers,
   personToPatientOrPractitionerMapper,
-  getPatientsOrPractitioners,
+  getFhirResources,
 } = require("./serviceUtils");
 
 // This is for practitioner searches (direct read is special, below)
 module.exports.search = (args, context, logger) =>
   new Promise((resolve, reject) => {
-    //	logger.info('Practitioner >>> search');
-    let baseUrl = getBaseUrl(context);
-
     const {
       // Common search params, we only support _id
       base_version,
@@ -51,7 +48,7 @@ module.exports.search = (args, context, logger) =>
       _CONTAINED,
       _CONTAINEDTYPED,
 
-      // These are the parameters we can search for : name, identifier, family, gender and birthDate
+      // These are the parameters we can search for:
       name,
       identifier,
       family,
@@ -186,7 +183,7 @@ module.exports.search = (args, context, logger) =>
         });
 
         // Now with the complete criteria, search all the patients/practitioners and assemble the bundle
-        getPatientsOrPractitioners(
+        getFhirResources(
           person,
           include,
           criteria,
@@ -200,7 +197,7 @@ module.exports.search = (args, context, logger) =>
       });
     } else {
       // Normal search using all the criteria but 'identifier'
-      getPatientsOrPractitioners(
+      getFhirResources(
         person,
         include,
         criteria,
