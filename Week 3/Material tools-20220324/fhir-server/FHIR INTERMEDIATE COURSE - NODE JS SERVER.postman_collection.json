@@ -12,6 +12,35 @@
 					"name": "find by criteria",
 					"item": [
 						{
+							"name": "all patients",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{root}}/4_0_0/Patient",
+									"host": [
+										"{{root}}"
+									],
+									"path": [
+										"4_0_0",
+										"Patient"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "by name",
 							"event": [
 								{
@@ -28,12 +57,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient?name=John",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient?name=John",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient"
@@ -54,12 +81,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient?family=Jones",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient?family=Jones",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient"
@@ -80,12 +105,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient?identifier=https://saintmartinhospital.org/patient-id|1&gender=male",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient?identifier=https://saintmartinhospital.org/patient-id|1&gender=male",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient"
@@ -110,12 +133,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient?identifier=https://www.national-office.gov/ni|7766553",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient?identifier=https://www.national-office.gov/ni|7766553",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient"
@@ -136,12 +157,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient?name=john&birthdate=1917-05-29",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient?name=john&birthdate=1917-05-29",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient"
@@ -166,12 +185,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient?email=ringo.starr@beatles.uk",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient?email=ringo.starr@beatles.uk",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient"
@@ -197,12 +214,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient/3",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient/3",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient",
@@ -218,12 +233,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient/412",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient/412",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient",
@@ -255,12 +268,10 @@
 									"raw": "{\n    \"resourceType\": \"Patient\",\n\t\"text\":\n\t\t{\n\t\t\t\"status\": \"generated\",\n\t\t\t\"div\": \"<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><p></p></div>\"\n\t\t},\n\t\"identifier\": [\n\t    {\n\t        \"use\": \"usual\",\n\t        \"system\": \"https://www.national-office.gov/ni\",\n\t        \"value\": \"77000000\",\n\t        \"period\": {\n\t            \"start\": \"2019-06-06T09:41:47-03:00\"\n\t        }\n\t    }\n\t],\n    \"name\": [\n        {\n            \"use\": \"official\",\n            \"text\": \"John Smith\",\n            \"family\": \"Smith\",\n            \"given\": [\n                \"John\"\n            ]\n        },\n        {\n            \"use\": \"nickname\",\n            \"given\": [\n                \"Johnnie\"\n            ]\n        }\n    ],\n    \"telecom\": [\n        {\n            \"system\": \"email\",\n            \"value\": \"john.cash@singers.com\"\n        }\n    ],\n    \"gender\": \"male\",\n    \"birthDate\": \"1920-12-05\"\n}"
 								},
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Patient/",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Patient/",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Patient",
@@ -292,6 +303,124 @@
 			"description": "Server metadata"
 		},
 		{
+			"name": "MedicationRequest",
+			"item": [
+				{
+					"name": "test search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://moonshot-dev.mitre.org:4001/v/r4/fhir/MedicationRequest?patient=5052&intent=order,plan",
+							"protocol": "http",
+							"host": [
+								"moonshot-dev",
+								"mitre",
+								"org"
+							],
+							"port": "4001",
+							"path": [
+								"v",
+								"r4",
+								"fhir",
+								"MedicationRequest"
+							],
+							"query": [
+								{
+									"key": "patient",
+									"value": "5052"
+								},
+								{
+									"key": "intent",
+									"value": "order,plan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{root}}/4_0_0/MedicationRequest/1",
+							"host": [
+								"{{root}}"
+							],
+							"path": [
+								"4_0_0",
+								"MedicationRequest",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "by patient and intent",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{root}}/4_0_0/MedicationRequest?patient=14&intent=order,plan",
+							"host": [
+								"{{root}}"
+							],
+							"path": [
+								"4_0_0",
+								"MedicationRequest"
+							],
+							"query": [
+								{
+									"key": "patient",
+									"value": "14"
+								},
+								{
+									"key": "intent",
+									"value": "order,plan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "by patient, intent, and status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{root}}/4_0_0/MedicationRequest?patient=14&intent=order,plan&status=draft,on-hold",
+							"host": [
+								"{{root}}"
+							],
+							"path": [
+								"4_0_0",
+								"MedicationRequest"
+							],
+							"query": [
+								{
+									"key": "patient",
+									"value": "14"
+								},
+								{
+									"key": "intent",
+									"value": "order,plan"
+								},
+								{
+									"key": "status",
+									"value": "draft,on-hold"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Practitioner",
 			"item": [
 				{
@@ -303,12 +432,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner?name=John",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Practitioner?name=John",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Practitioner"
@@ -329,12 +456,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner?family=McEnroe",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Practitioner?family=McEnroe",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Practitioner"
@@ -355,12 +480,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner?identifier=https://saintmartinhospital.org/patient-id|10&gender=male",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Practitioner?identifier=https://saintmartinhospital.org/patient-id|10&gender=male",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Practitioner"
@@ -380,47 +503,15 @@
 							"response": []
 						},
 						{
-							"name": "by id",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner?id=1&",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"4_0_0",
-										"Practitioner"
-									],
-									"query": [
-										{
-											"key": "id",
-											"value": "1"
-										},
-										{
-											"key": "",
-											"value": null
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "by NPI identifier",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner?identifier=http://hl7.org.fhir/sid/us-npi|2",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Practitioner?identifier=http://hl7.org.fhir/sid/us-npi|2",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Practitioner"
@@ -441,12 +532,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner?name=patrick&birthdate=1959-02-16",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Practitioner?name=patrick&birthdate=1959-02-16",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Practitioner"
@@ -471,12 +560,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner?email=john.entwistle@thewho.uk",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Practitioner?email=john.entwistle@thewho.uk",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Practitioner"
@@ -502,16 +589,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner/3",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Practitioner/1",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Practitioner",
-										"3"
+										"1"
 									]
 								}
 							},
@@ -523,12 +608,10 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/4_0_0/Practitioner/412",
-									"protocol": "http",
+									"raw": "{{root}}/4_0_0/Practitioner/412",
 									"host": [
-										"localhost"
+										"{{root}}"
 									],
-									"port": "3000",
 									"path": [
 										"4_0_0",
 										"Practitioner",
@@ -541,6 +624,12 @@
 					]
 				}
 			]
+		}
+	],
+	"variable": [
+		{
+			"key": "root",
+			"value": "http://localhost:3000"
 		}
 	]
 }
