@@ -5,6 +5,14 @@ const LegacyDocumentType = require("./legacy_document_type");
 // UID generator for bundles
 const uuidv4 = require("uuid").v4;
 
+// Housekeeping for sequelize
+const { DataTypes } = require("sequelize");
+const sequelize = require("./dbconfig").db;
+
+// Specific models for our legacy medication object
+const Person = require("./models/PERSON");
+const Medication = require("./models/MEDS");
+
 const { RESOURCES } = require("@asymmetrik/node-fhir-server-core").constants;
 const FHIRServer = require("@asymmetrik/node-fhir-server-core");
 const getBundle = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/bundle");
@@ -217,7 +225,7 @@ function personToPatientOrPractitionerMapper(person, resourceType) {
 
 // Medication to MedicationRequest mapper. This function receives a legacy medication, FHIR patient, FHIR practitioner, and returns a FHIR MedicationRequest
 function medToMedicationRequestMapper(medication, patient, practitioner) {
-  let resource = getMedicationRequest;
+  let resource = new getMedicationRequest();
 
   // Logical server id
   resource.id = medication.med_id.toString();
@@ -254,7 +262,9 @@ function medToMedicationRequestMapper(medication, patient, practitioner) {
   return resource;
 }
 
-const convertPersonToFHIR = (resourceType) => (person) => {
+const convertPersonToFHIR = (resourceType) => (result) => {
+  const person = result.get();
+
   // We map from legacy person to person/practitioner
   const initialResource = personToPatientOrPractitionerMapper(
     person,
@@ -268,26 +278,34 @@ const convertPersonToFHIR = (resourceType) => (person) => {
   return resource;
 };
 
-const convertMedicationToFHIR = (medication) => {
-  const patient = {
-    id: 1234,
-  }; /*|| (await patientSearchById(medication.PRSN_ID, context))*/
-  const practitioner = {
-    id: 5678,
-  }; /*|| (await practitionerSearchById(medication.NPI, context))*/
+const convertMedicationToFHIR = async (result) => {
+  const medication = result.get();
+  let person = new Person(sequelize, DataTypes);
 
-  // console.log("patient", JSON.stringify(patient));
-  // console.log("practitioner", JSON.stringify(practitioner));
+  console.log("medication", medication);
 
-  // We map from legacy medication to MedicationRequest
-  const medicationRequest = medToMedicationRequestMapper(
-    medication,
-    patient,
-    practitioner
-  );
+  return await Promise.all([
+    person.findOne({ where: { PRSN_ID: medication.PRSN_ID } }),
+    person.findOne({ where: { NPI: medication.NPI } }),
+  ]).then(([legacyPatient, legacyPractitioner]) => {
+    const patient = personToPatientOrPractitionerMapper(
+      legacyPatient,
+      "Patient"
+    );
 
-  // And save the result in an array
-  return medicationRequest;
+    const practitioner = personToPatientOrPractitionerMapper(
+      legacyPractitioner,
+      "Practitioner"
+    );
+
+    const medicationRequest = medToMedicationRequestMapper(
+      medication,
+      patient,
+      practitioner
+    );
+
+    return medicationRequest;
+  });
 };
 
 const getFhirConverter = (resourceType) => {

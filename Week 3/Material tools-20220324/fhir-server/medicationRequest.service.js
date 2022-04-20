@@ -95,53 +95,18 @@ module.exports.searchById = (args, context, logger) =>
     let medication = new Medication(sequelize, DataTypes);
     let person = new Person(sequelize, DataTypes);
 
-    // We declare sequelizer the relations between the tables
-    // medication.belongsTo(person, {
-    //   as: "PERSONS",
-    //   foreignKey: "PRSN_ID",
-    //   otherKey: "NPI",
-    // });
-    // person.hasMany(medication, {
-    //   as: "MEDS",
-    //   foreignKey: "PRSN_ID",
-    //   otherKey: "NPI",
-    // });
-    // let include = [{ model: person, as: "PERSONS" }];
-
     medication
-      .findOne({
-        // include,
-        where: { med_id: id },
-      })
-      .then(async (result) => {
+      .findOne({ where: { med_id: id } })
+      .then((result) => {
         if (result) {
           const medication = result.get();
 
           // // Do searchById
-          const [legacyPatient, legacyPractitioner] = await Promise.all([
+          return Promise.all([
+            medication,
             person.findOne({ where: { PRSN_ID: medication.PRSN_ID } }),
             person.findOne({ where: { NPI: medication.NPI } }),
           ]);
-
-          const patient = personToPatientOrPractitionerMapper(
-            legacyPatient,
-            "Patient"
-          );
-
-          const practitioner = personToPatientOrPractitionerMapper(
-            legacyPractitioner,
-            "Practitioner"
-          );
-
-          const medicationRequest = medToMedicationRequestMapper(
-            medication,
-            patient,
-            practitioner
-          );
-
-          console.log("medicationRequest", medicationRequest);
-
-          resolve(medicationRequest);
         } else {
           let operationOutcome = new getOperationOutcome();
           var message = `MedicationRequest with id ${id} not found `;
@@ -155,6 +120,25 @@ module.exports.searchById = (args, context, logger) =>
           ];
           resolve(operationOutcome);
         }
+      })
+      .then(([medication, legacyPatient, legacyPractitioner]) => {
+        const patient = personToPatientOrPractitionerMapper(
+          legacyPatient,
+          "Patient"
+        );
+
+        const practitioner = personToPatientOrPractitionerMapper(
+          legacyPractitioner,
+          "Practitioner"
+        );
+
+        const medicationRequest = medToMedicationRequestMapper(
+          medication,
+          patient,
+          practitioner
+        );
+
+        resolve(medicationRequest);
       })
       .catch((error) => {
         let operationOutcome = new getOperationOutcome();
