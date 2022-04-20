@@ -10,12 +10,11 @@ const Medication = require("./models/MEDS");
 
 const getOperationOutcome = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/operationoutcome");
 
-const { searchById: patientSearchById } = require("./patient.service.js");
 const {
-  searchById: practitionerSearchById,
-} = require("./practitioner.service.js");
-
-const { getBaseUrl, getFhirResources } = require("./serviceUtils");
+  personToPatientOrPractitionerMapper,
+  medToMedicationRequestMapper,
+  getFhirResources,
+} = require("./serviceUtils");
 
 // This is for MedicationRequest searches (direct read is special, below)
 module.exports.search = (args, context, logger) =>
@@ -74,19 +73,7 @@ module.exports.search = (args, context, logger) =>
       });
     }
 
-    let include = [
-      // {
-      //   model: medication,
-      //   as: "MEDS",
-      //   include: [
-      //     {
-      //       model: person,
-      //       as: "PERSONS",
-      //     },
-      //   ],
-      // },
-      { model: person, as: "PERSONS" },
-    ];
+    let include = [{ model: person, as: "PERSONS" }];
 
     getFhirResources(
       medication,
@@ -106,28 +93,54 @@ module.exports.searchById = (args, context, logger) =>
     // 	logger.info('MedicationRequest >>> searchById');
     let { base_version, id } = args;
     let medication = new Medication(sequelize, DataTypes);
+    let person = new Person(sequelize, DataTypes);
+
+    // We declare sequelizer the relations between the tables
+    // medication.belongsTo(person, {
+    //   as: "PERSONS",
+    //   foreignKey: "PRSN_ID",
+    //   otherKey: "NPI",
+    // });
+    // person.hasMany(medication, {
+    //   as: "MEDS",
+    //   foreignKey: "PRSN_ID",
+    //   otherKey: "NPI",
+    // });
+    // let include = [{ model: person, as: "PERSONS" }];
 
     medication
       .findOne({
+        // include,
         where: { med_id: id },
       })
-      .then(async (medication) => {
-        if (medication) {
+      .then(async (result) => {
+        if (result) {
+          const medication = result.get();
+
           // // Do searchById
-          const patient = await patientSearchById(medication.PRSN_ID, context);
-          const practitioner = await practitionerSearchById(
-            medication.NPI,
-            context
+          const [legacyPatient, legacyPractitioner] = await Promise.all([
+            person.findOne({ where: { PRSN_ID: medication.PRSN_ID } }),
+            person.findOne({ where: { NPI: medication.NPI } }),
+          ]);
+
+          const patient = personToPatientOrPractitionerMapper(
+            legacyPatient,
+            "Patient"
           );
 
-          // console.log("patient", JSON.stringify(patient));
-          // console.log("practitioner", JSON.stringify(practitioner));
+          const practitioner = personToPatientOrPractitionerMapper(
+            legacyPractitioner,
+            "Practitioner"
+          );
 
           const medicationRequest = medToMedicationRequestMapper(
             medication,
             patient,
             practitioner
           );
+
+          console.log("medicationRequest", medicationRequest);
+
           resolve(medicationRequest);
         } else {
           let operationOutcome = new getOperationOutcome();
@@ -145,7 +158,7 @@ module.exports.searchById = (args, context, logger) =>
       })
       .catch((error) => {
         let operationOutcome = new getOperationOutcome();
-        var message = error;
+        var message = error || "Error in retrieving MedicationRequest";
         operationOutcome.issue = [
           {
             severity: "error",

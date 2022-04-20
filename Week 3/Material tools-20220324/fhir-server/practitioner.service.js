@@ -16,7 +16,6 @@ const LegacyDocumentType = require("./legacy_document_type");
 const getOperationOutcome = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/operationoutcome");
 
 const {
-  getBaseUrl,
   getPersonsByIdentifier,
   convertLegacyToFhirIdentifiers,
   personToPatientOrPractitionerMapper,

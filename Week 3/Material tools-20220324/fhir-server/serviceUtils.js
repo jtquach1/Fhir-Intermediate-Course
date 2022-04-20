@@ -212,11 +212,10 @@ function personToPatientOrPractitionerMapper(person, resourceType) {
     };
   }
 
-  // And that's our resource
   return resource;
 }
 
-// Medication to MedicationRequest mapper. This function receives a legacy medication and returns a FHIR MedicationRequest
+// Medication to MedicationRequest mapper. This function receives a legacy medication, FHIR patient, FHIR practitioner, and returns a FHIR MedicationRequest
 function medToMedicationRequestMapper(medication, patient, practitioner) {
   let resource = getMedicationRequest;
 
@@ -252,7 +251,6 @@ function medToMedicationRequestMapper(medication, patient, practitioner) {
     div: '<div xmlns="http:// www.w3.org/1999/xhtml">' + resource.id + "</div>",
   };
 
-  // And that's our resource
   return resource;
 }
 
