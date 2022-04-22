@@ -20,11 +20,6 @@ const getPatient = require("@asymmetrik/node-fhir-server-core/src/server/resourc
 const getPractitioner = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/practitioner");
 const getMedicationRequest = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/medicationrequest");
 
-// Meta data for FHIR R4
-let getMeta = (base_version) => {
-  return require(FHIRServer.resolveFromVersion(base_version, RESOURCES.META));
-};
-
 // How to search the address of our server, so we can return it in the fullURL for each Patient entry
 function getBaseUrl(context) {
   const FHIRVersion = "/4_0_0/";

@@ -12,18 +12,7 @@
 					"name": "find by criteria",
 					"item": [
 						{
-							"name": "all patients",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
+							"name": "by none",
 							"request": {
 								"method": "GET",
 								"header": [],
@@ -93,6 +82,38 @@
 										{
 											"key": "family",
 											"value": "Jones"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "by family (paginated)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{root}}/4_0_0/Patient?name=John&_count=5&_page=2",
+									"host": [
+										"{{root}}"
+									],
+									"path": [
+										"4_0_0",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "John"
+										},
+										{
+											"key": "_count",
+											"value": "5"
+										},
+										{
+											"key": "_page",
+											"value": "2"
 										}
 									]
 								}
@@ -294,7 +315,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": ""
+							"raw": "{{root}}/4_0_0/metadata",
+							"host": [
+								"{{root}}"
+							],
+							"path": [
+								"4_0_0",
+								"metadata"
+							]
 						}
 					},
 					"response": []
@@ -305,40 +333,6 @@
 		{
 			"name": "MedicationRequest",
 			"item": [
-				{
-					"name": "test search",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://moonshot-dev.mitre.org:4001/v/r4/fhir/MedicationRequest?patient=5052&intent=order,plan",
-							"protocol": "http",
-							"host": [
-								"moonshot-dev",
-								"mitre",
-								"org"
-							],
-							"port": "4001",
-							"path": [
-								"v",
-								"r4",
-								"fhir",
-								"MedicationRequest"
-							],
-							"query": [
-								{
-									"key": "patient",
-									"value": "5052"
-								},
-								{
-									"key": "intent",
-									"value": "order,plan"
-								}
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "by id",
 					"request": {
@@ -364,7 +358,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{root}}/4_0_0/MedicationRequest?patient=14&intent=order,plan",
+							"raw": "{{root}}/4_0_0/MedicationRequest?patient=7&intent=order,plan",
 							"host": [
 								"{{root}}"
 							],
@@ -375,7 +369,7 @@
 							"query": [
 								{
 									"key": "patient",
-									"value": "14"
+									"value": "7"
 								},
 								{
 									"key": "intent",
