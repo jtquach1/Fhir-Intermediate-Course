@@ -11,12 +11,11 @@ const sequelize = require("./dbconfig").db;
 
 // Specific models for our legacy medication object
 const Person = require("./models/PERSON");
-const Medication = require("./models/MEDS");
 
 const { RESOURCES } = require("@asymmetrik/node-fhir-server-core").constants;
 const FHIRServer = require("@asymmetrik/node-fhir-server-core");
-const getBundle = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/bundle");
-const getBundleEntry = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/bundleentry");
+const Bundle = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/bundle");
+const BundleEntry = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/bundleentry");
 const getPatient = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/patient");
 const getPractitioner = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/practitioner");
 const getMedicationRequest = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/medicationrequest");
@@ -237,8 +236,8 @@ function medToMedicationRequestMapper(medication, patient, practitioner) {
     coding: [
       {
         system: "http://www.nlm.nih.gov/research/umls/rxnorm",
-        code: resource.code,
-        display: resource.display,
+        code: medication.code,
+        display: medication.display,
       },
     ],
   };
@@ -282,8 +281,6 @@ const convertMedicationToFHIR = async (result) => {
   const medication = result.get();
   let person = new Person(sequelize, DataTypes);
 
-  console.log("medication", medication);
-
   return await Promise.all([
     person.findOne({ where: { PRSN_ID: medication.PRSN_ID } }),
     person.findOne({ where: { NPI: medication.NPI } }),
@@ -324,6 +321,49 @@ const getFhirConverter = (resourceType) => {
   return converter;
 };
 
+const getLinks = (query, endpoint, total, pageSize, pageInt) => {
+  // This is to reassemble the query
+  const getQuery = (exclude) =>
+    [
+      `${endpoint}`,
+      ...Object.entries(query)
+        .filter((entry) => !exclude.includes(entry[0]))
+        .map((entry, index) => `${!index ? "?" : "&"}${entry.join("=")}`),
+    ].join("");
+
+  // And finally, we generate the link element self (always), prev (if there is a previous page available), and next (if there is a next page available)
+  const originalQuery = getQuery(["base_version"]);
+  const linkQuery = getQuery(["base_version", "_count", "_page"]);
+
+  // Support search without parameters
+  const separator = linkQuery === endpoint ? "?" : "&";
+
+  // self is always there
+  const links = [{ relation: "self", url: originalQuery }];
+  const maxPages = Math.floor(total / pageSize + 1);
+
+  // prev and next may or not exist
+  if (pageInt > 1) {
+    const prevPage = pageInt - 1;
+    links.push({
+      relation: "prev",
+      url: `${linkQuery}${separator}_count=${pageSize}&_page=${prevPage}`,
+    });
+  }
+
+  console.log("pageInt", pageInt);
+  console.log("maxPages", maxPages);
+  if (pageInt < maxPages) {
+    const nextPage = pageInt + 1;
+    links.push({
+      relation: "next",
+      url: `${linkQuery}${separator}_count=${pageSize}&_page=${nextPage}`,
+    });
+  }
+
+  return links;
+};
+
 // This is the specific search for all resources matching the query
 function getFhirResources(
   legacyModel,
@@ -339,127 +379,51 @@ function getFhirResources(
 
   return new Promise(function (resolve, reject) {
     // Here we solve paginations issues: how many records per page, which page
-    let pageSize = parseInt(count);
-    let pageInt = parseInt(page);
+    const pageSize = parseInt(count);
+    const pageInt = parseInt(page);
     let offset = (pageInt - 1) * pageSize;
     let limit = pageSize;
 
-    // Bundle and Entry definitions
-    let BundleEntry = getBundleEntry;
-    let Bundle = getBundle;
-
     // Our Base address
-    let baseUrl = getBaseUrl(context);
+    const baseUrl = getBaseUrl(context);
+    const endpoint = `${baseUrl}${resourceType}`;
 
     // Get total number of rows because we want to know how many records in total we have to report that in our searchset bundle
     legacyModel
-      .findAndCountAll({
-        where: criteria,
-        include: include,
-        distinct: true,
-      })
-      .then((TotalCount) => {
-        // Adjust page offset and limit to the total count
-        if (offset + limit > TotalCount.count) {
-          limit = count;
-          offset = 0;
-        }
-
+      .count({ where: criteria, include, distinct: true })
+      .then((total) => {
         // Now we actually do the search combining the criteria, inclusions, limit and offset
         legacyModel
-          .findAll({
-            where: criteria,
-            include: include,
-            limit: limit,
-            offset: offset,
-          })
-          .then((legacyModels) => {
-            const result = legacyModels.map(converter);
-
+          .findAll({ where: criteria, include, limit, offset })
+          .then((legacyModels) => Promise.all(legacyModels.map(converter)))
+          .then((resources) => {
             // With all the patients we have in the result.array we assemble the entries
-            const entries = result.map(
+            const entries = resources.map(
               (resource) =>
                 new BundleEntry({
-                  fullUrl: `${baseUrl}/${resourceType}/${resource.id}`,
-                  resource: resource,
+                  fullUrl: `${endpoint}/${resource.id}`,
+                  resource,
                 })
             );
+
+            console.log(context.req.query);
 
             // We assemble the bundle with the type, total, entries, id, and meta
             const bundle = new Bundle({
               id: uuidv4(),
-              meta: {
-                lastUpdated: new Date(),
-              },
+              meta: { lastUpdated: new Date() },
               type: "searchset",
-              total: TotalCount.count,
+              total,
               entry: entries,
             });
 
-            // And finally, we generate the link element
-            // self (always), prev (if there is a previous page available)
-            // next (if there is a next page available)
-            var OriginalQuery = `${baseUrl}${resourceType}`;
-            var LinkQuery = `${baseUrl}${resourceType}`;
-            var parNum = 0;
-            var linkParNum = 0;
-
-            // This is to reassemble the query
-            for (var param in context.req.query) {
-              console.log(param);
-              console.log(context.req.query[param]);
-              if (param != "base_version") {
-                var sep = "&";
-                parNum = parNum + 1;
-
-                if (parNum == 1) {
-                  sep = "?";
-                }
-
-                OriginalQuery = `${OriginalQuery}${sep}${param}=${context.req.query[param]}`;
-
-                if (param != "_page" && param != "_count") {
-                  var LinkSep = "&";
-                  linkParNum = linkParNum + 1;
-
-                  if (linkParNum == 1) {
-                    LinkSep = "?";
-                  }
-
-                  LinkQuery = `${LinkQuery}${LinkSep}${param}=${context.req.query[param]}`;
-                }
-              }
-            }
-
-            // self is always there
-            MyLinks = [
-              {
-                relation: "self",
-                url: OriginalQuery,
-              },
-            ];
-
-            // prev and next may or not exist
-            if (pageInt > 1) {
-              const prevPage = page - 1;
-              MyLinks.push({
-                relation: "prev",
-                url: `${LinkQuery}&_count=${count}&_page=${prevPage.toString()}`,
-              });
-            }
-
-            MaxPages = TotalCount.count / count + 1;
-            MaxPages = parseInt(MaxPages);
-
-            if (pageInt < MaxPages) {
-              const nextPage = page + 1;
-              MyLinks.push({
-                relation: "next",
-                url: `${LinkQuery}&_count=${count}&_page=${nextPage.toString()}`,
-              });
-            }
-
-            bundle.link = MyLinks;
+            bundle.link = getLinks(
+              context.req.query,
+              endpoint,
+              total,
+              pageSize,
+              pageInt
+            );
 
             // Now we have all the required elements, so we can return the complete bundle
             resolve(bundle);
@@ -475,4 +439,6 @@ module.exports = {
   personToPatientOrPractitionerMapper,
   medToMedicationRequestMapper,
   getFhirResources,
+  convertPersonToFHIR,
+  convertMedicationToFHIR,
 };

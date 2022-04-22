@@ -17,8 +17,7 @@ const getOperationOutcome = require("@asymmetrik/node-fhir-server-core/src/serve
 
 const {
   getPersonsByIdentifier,
-  convertLegacyToFhirIdentifiers,
-  personToPatientOrPractitionerMapper,
+  convertPersonToFHIR,
   getFhirResources,
 } = require("./serviceUtils");
 
@@ -241,17 +240,9 @@ module.exports.searchById = (args, context, logger) =>
           },
         ],
       })
-      .then((person) => {
-        if (person) {
-          const initialPractitioner = personToPatientOrPractitionerMapper(
-            person,
-            "Practitioner"
-          );
-          const practitioner = convertLegacyToFhirIdentifiers(
-            initialPractitioner,
-            person
-          );
-          resolve(practitioner);
+      .then((result) => {
+        if (result) {
+          resolve(convertPersonToFHIR("Practitioner")(result));
         } else {
           let operationOutcome = new getOperationOutcome();
           let legacyMapper = LegacyDocumentType;

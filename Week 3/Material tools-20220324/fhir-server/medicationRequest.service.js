@@ -10,11 +10,7 @@ const Medication = require("./models/MEDS");
 
 const getOperationOutcome = require("@asymmetrik/node-fhir-server-core/src/server/resources/4_0_0/schemas/operationoutcome");
 
-const {
-  personToPatientOrPractitionerMapper,
-  medToMedicationRequestMapper,
-  getFhirResources,
-} = require("./serviceUtils");
+const { convertMedicationToFHIR, getFhirResources } = require("./serviceUtils");
 
 // This is for MedicationRequest searches (direct read is special, below)
 module.exports.search = (args, context, logger) =>
@@ -93,20 +89,12 @@ module.exports.searchById = (args, context, logger) =>
     // 	logger.info('MedicationRequest >>> searchById');
     let { base_version, id } = args;
     let medication = new Medication(sequelize, DataTypes);
-    let person = new Person(sequelize, DataTypes);
 
     medication
       .findOne({ where: { med_id: id } })
       .then((result) => {
         if (result) {
-          const medication = result.get();
-
-          // // Do searchById
-          return Promise.all([
-            medication,
-            person.findOne({ where: { PRSN_ID: medication.PRSN_ID } }),
-            person.findOne({ where: { NPI: medication.NPI } }),
-          ]);
+          resolve(convertMedicationToFHIR(result));
         } else {
           let operationOutcome = new getOperationOutcome();
           var message = `MedicationRequest with id ${id} not found `;
@@ -120,25 +108,6 @@ module.exports.searchById = (args, context, logger) =>
           ];
           resolve(operationOutcome);
         }
-      })
-      .then(([medication, legacyPatient, legacyPractitioner]) => {
-        const patient = personToPatientOrPractitionerMapper(
-          legacyPatient,
-          "Patient"
-        );
-
-        const practitioner = personToPatientOrPractitionerMapper(
-          legacyPractitioner,
-          "Practitioner"
-        );
-
-        const medicationRequest = medToMedicationRequestMapper(
-          medication,
-          patient,
-          practitioner
-        );
-
-        resolve(medicationRequest);
       })
       .catch((error) => {
         let operationOutcome = new getOperationOutcome();
