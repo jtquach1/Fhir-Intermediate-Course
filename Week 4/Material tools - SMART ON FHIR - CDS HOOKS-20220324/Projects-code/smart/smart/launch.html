@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Prescriptions Module</title>
+        <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
+    </head>
+    <body>
+        <script>
+		  //These parameters will be received at launch time in the URL
+		  var fhirServiceUrl = getUrlParameter("iss");
+		  var launchContextId = getUrlParameter("launch");	 
+		  FHIR.oauth2.authorize({
+				clientId: "prescriptions_app",
+				// The scope necessary for the operation of the application is declared
+				scope: [
+					"launch",           // Get current context of the EHR
+					"openid fhirUser",  // Get current user
+					"patient/MedicationRequest.*", //Read and write patient prescriptions
+					"user/Medication.read" //Read medication
+				].join(" "),
+				redirectUri: "http://localhost:8085/index.html", //Page where the application will be redirected once it is authenticated
+				serverUrl: fhirServiceUrl
+			 });
+		
+        
+
+            function getUrlParameter(sParam)
+            {
+                var sPageURL = window.location.search.substring(1);
+                var sURLVariables = sPageURL.split('&');
+                for (var i = 0; i < sURLVariables.length; i++) {
+                    var sParameterName = sURLVariables[i].split('=');
+                    if (sParameterName[0] == sParam) {
+                        var res = sParameterName[1].replace(/\+/g, '%20');
+                        return decodeURIComponent(res);
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

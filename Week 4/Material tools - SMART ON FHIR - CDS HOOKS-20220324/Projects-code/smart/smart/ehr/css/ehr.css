@@ -1,0 +1,84 @@
+html,
+body,
+main.container {
+	height: 100%;
+}
+main.container {
+	display: table;
+	width: 100%;
+	padding: 0;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0;
+}
+
+main .row {
+	height: 100%;
+	display: table-row;
+}
+
+main .sidebar {
+	display: table-cell;
+	width: 200px;
+	background: #383435;
+	color: #aaa;
+	padding-top: 20px;
+}
+
+main .content {
+	display: table-cell;
+	vertical-align: top;
+	padding-left: 10px;
+	padding-top: 20px;
+}
+
+nav {
+	background-color: #E8E8E8;
+}
+
+main.container .clear {
+    margin-top: 20px;
+}
+
+main.container h5 {
+	display:inline-block;
+	margin-left:15px;
+}
+
+main.container hr {
+	border-top:1px solid #505050;
+	margin: 5px;
+}
+
+main.container .clear-options {
+	margin-top: 40px;
+}
+
+nav.navbar h5 {
+	display:inline-block;
+	margin-left: 15px;
+}
+
+nav.navbar #logged-practitioner {
+	margin-right: 20px;
+}
+
+img .center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+nav #logged-practitioner .fa-lg {
+	vertical-align: 0% !important;
+}
+
+main.container .sidebar img {
+	width: 170px;
+	height: 170px;
+}
+
+main.container .sidebar #prescriptions-section {
+	cursor: pointer;
+}

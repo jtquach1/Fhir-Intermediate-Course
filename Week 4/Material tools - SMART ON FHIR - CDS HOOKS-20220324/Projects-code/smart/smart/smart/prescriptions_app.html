@@ -1,0 +1,64 @@
+<div id="prescriptions">
+	<div id="title">
+		<h3>Prescriptions List</h3>
+	</div>
+	<div id="new-prescription">
+		<button  type="button" class="btn btn-primary" data-toggle="modal" data-target="#new-prescription-modal">
+			<span class="fa fa-plus" aria-hidden="true"></span> New Prescription
+		</button>
+	</div>
+	<div id="prescriptions-list"> 
+	<table id="prescriptions-table" border="1" style="display: none;">
+    <thead>
+    	<tr>
+    		<th>Date</th>
+    		<th>Medication</th>
+    		<th>Dose</th>
+    		<th>Status</th>
+  		</tr>
+    </thead>
+    <tbody>	
+  	</tbody>   
+</table>
+	 	<span id="no-prescriptions" class="centered" style="display:none;"> No prescriptions to show </span>
+	</div>
+
+<div class="modal fade" id="new-prescription-modal" tabindex="-1" role="dialog" aria-labelledby="new-prescription-modal-title" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="new-prescription-modal-title">New Prescription</h5>
+      </div>
+      <div class="modal-body">
+      		<div id="medication" style="display:none;">
+      			<input id="selected-medication-id" type="hidden" value="">
+				<h6><strong>Selected Medication: </strong><h6>
+				<h6><span id="selected-medication"></span></h6>
+			</div>	
+			<div id="search">
+				<div class="form-group has-search">
+					<span class="fa fa-search form-control-feedback"></span>
+					<input type="text" id="search-input" class="form-control" placeholder="Search Medication..." onkeyup="app.searchMedication(this);">
+				</div>
+
+				<ul id="search-results">
+			    </ul>
+			</div>
+			<div id="dose" style="display: none;">
+				<div>
+					Dose:  <input type="number" id="input-dose"> mg <input type="number" id="dose-times-input"> times per day.
+				</div>
+				<div>    
+					Comments:  <input type="text" id="dose-comments-input">
+				</div>
+				<br>
+				<button id="add-prescription" data-type="" onclick="app.addPrescription(this);">Add</button>
+		    </div>
+			<div id="alert" role="alert">
+			</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
